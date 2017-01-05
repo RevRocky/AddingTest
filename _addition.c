@@ -113,7 +113,7 @@ static PyObject *element_add_addition(PyObject *self, PyObject *args) {
 	Py_DECREF(array2);
 
 	/* Building the output */
-    npy_int dimension = {size}
+    npy_int dimension = {size};
 
 	PyObject* pyArray = PyArray_SimpleNew(size, dimension, NPY_INT);
 	Py_INCREF(pyArray);

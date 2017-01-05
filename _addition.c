@@ -115,6 +115,7 @@ static PyObject *element_add_addition(PyObject *self, PyObject *args) {
 	/* Building the output */
     npy_int dimension = {size};
 
+    printf("About to build array\n");
 	PyObject* pyArray = PyArray_SimpleNew(size, dimension, NPY_INT);
 	Py_INCREF(pyArray);
 

@@ -13,15 +13,12 @@ int add(int num1, int num2) {
 /*
  * Adds each correspoding element of two arrays into a third
  * array.
- * Due to the calling environment we kno that the two arrays will
- * always be of the same size
+ * Result Array is a C pointer to a numpy array.
  */
-int* element_add(int* array1, int* array2, int size) {
-	int* sumArray = malloc(size * sizeof(int));
+void element_add(int* array1, int* array2, int* result_array, int size) {
 	int i;
-
 	for (i = 0; i < size; i++) {
-		sumArray[i] = array1[i] + array2[i];
+		result_array[i] = array1[i] + array2[i];
+		printf("%d\n", result_array[i]);
 	}
-	return sumArray;
 }

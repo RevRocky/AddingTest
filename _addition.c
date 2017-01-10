@@ -32,6 +32,7 @@ PyMODINIT_FUNC PyInit__addition(void)
         "_addition",
         module_docstring,
         -1,
+
         module_methods,
         NULL,
         NULL,
@@ -68,9 +69,9 @@ static PyObject *add_addition(PyObject *self, PyObject *args)
 static PyObject *element_add_addition(PyObject *self, PyObject *args) {
 	int* array1;
 	int* array2;
-	int* resultArray;
 	PyObject* obj1;
 	PyObject* obj2;
+	PyArrayObject* cobraArray;
 	int size;
 
 	/* Parse the input tuple */
@@ -105,30 +106,28 @@ static PyObject *element_add_addition(PyObject *self, PyObject *args) {
 	print_array(array2, size);
 	print_array(array1, size);
 
+	// Creating the python array
+	npy_intp dimension[1] = {size};
+    printf("About to build array\n");
+    cobraArray = (PyArrayObject*) PyArray_FromDims(1, dimension, 'd');
+    Py_INCREF(cobraArray);
+    PyArray_ENABLEFLAGS((PyArrayObject*)cobraArray, NPY_ARRAY_OWNDATA);
+	
+    // Obtaining a C pointer to our python array
+    int* result_array = (int*) cobraArray->data;
+
 	// Calling the function
-	resultArray = element_add(array1, array2, size);
+	element_add(array1, array2, result_array, size);
+
+	print_array((int*)cobraArray->data, size);
 
 	// Cleaning Up
 	Py_DECREF(array1);
 	Py_DECREF(array2);
-
-	/* Building the output */
-    npy_int dimension = {size};
-
-    printf("About to build array\n");
-	PyObject* pyArray = PyArray_SimpleNew(size, dimension, NPY_INT);
-	Py_INCREF(pyArray);
+	free(result_array);
 
 	printf("Made It\n");
-	// Building Output Array
-	int* array_buffer = (int*)PyArray_DATA(pyArray);
-	int i;
-	for (i = 0; i < size; i++) {
-		*array_buffer++ = *resultArray++;
-		printf("%d, ", array_buffer[i]);
-	}
-
-	return pyArray;
+	return PyArray_Return(cobraArray);
 }
 
 static void print_array(int *array, int size) {
@@ -138,15 +137,4 @@ static void print_array(int *array, int size) {
 		printf("%d, ", array[i]);
 	}
 	printf("}\n");
-}
-
-static void test_element_add() {
-	printf("Testing Elementwise Addition\n");
-	int my_array[] = {1, 2, 3};
-	int* final;
-
-	print_array(my_array, 3);
-	final = element_add(my_array, my_array, 3);
-	print_array(final, 3);
-	printf("Done Testing Elementwise Addition\n");
 }
